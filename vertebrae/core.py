@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import os
-import socket
 from collections import namedtuple
 from logging.handlers import WatchedFileHandler
 
@@ -16,10 +15,6 @@ class Server:
 
     def __init__(self, services, applications):
         self.setup_logger(path=os.getenv('logfile'))
-        Service.logger('vertebrae').info(
-            f'{socket.gethostname()} serving {len(applications)} apps with {len(services)} services'
-        )
-
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
 
@@ -27,6 +22,7 @@ class Server:
             self.loop.run_until_complete(app.start())
         for service in services:
             Service.enroll(service.log.name, service)
+        Service.logger('vertebrae').info(f'Serving {len(applications)} apps with {len(services)} services')
 
     def run(self):
         try:
