@@ -1,0 +1,10 @@
+*.pyc
+*.pyd
+*.DS_Store
+*__pycache__*
+.idea/*
+env/*
+package-lock.json
+*.egg-info
+*dist/*
+*build/*
