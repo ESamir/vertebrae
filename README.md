@@ -14,8 +14,6 @@ pip install vertebrae
 2. (optionally) Supply connection details to Postgres and/or Redis. Vertebrae will create async connection pools for each.
 3. Convert your classes to Vertebrae Services. This creates a mesh network between them. Each service gets a handler to your databases.
 
-> Above you can see two apps being served with three services behind them. Services can access the databases. 
-
 ## Get started
 
 Start by loading any application properties into the ```Config``` object.
