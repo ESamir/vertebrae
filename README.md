@@ -14,6 +14,8 @@ An application framework for building async Python microservices. Use this to ad
 
 ## Get started
 
+> pip install vertebrae 
+
 Start by loading your application properties into the ```Config``` object.
 Next, create a server object containing ```applications``` and ```services```.
 An application is an API that serves a list of routes at a specified port. A service is a standalone
