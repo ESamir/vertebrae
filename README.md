@@ -1,24 +1,26 @@
 # Vertebrae
 
-An application framework for building async Python microservices. Use this to add consistency between your API code bases. 
+An application framework for building async Python microservices. Use this to add consistency between your API code bases.
+You get an API, a mesh network of services, and database connection pooling.
+
+## Install
+```bash
+pip install vertebrae
+```
 
 ## How it works
 
 1. Create a Vertebrae Server and attach applications (APIs) to it with defined Vertebrae Routes.
 2. (optionally) Supply connection details to Postgres and/or Redis. Vertebrae will create async connection pools for each.
-3. Convert your classes to Vertebrae Services. This creates a mesh network between them and supplies each with a handler to your databases.
+3. Convert your classes to Vertebrae Services. This creates a mesh network between them. Each service gets a handler to your databases.
 
-<img src="architecture.png" width="700"/>
-
-> Above you can see two apps being served with three services available. Services can tap into the databases. 
+> Above you can see two apps being served with three services behind them. Services can access the databases. 
 
 ## Get started
 
-> pip install vertebrae 
-
-Start by loading your application properties into the ```Config``` object.
-Next, create a server object containing ```applications``` and ```services```.
-An application is an API that serves a list of routes at a specified port. A service is a standalone
+Start by loading any application properties into the ```Config``` object.
+Then, create a server object containing ```applications``` and ```services```.
+An application is an API that serves a list of route classes at a specified port. A service is a standalone
 Python class that contains business logic.
 
 ```python
@@ -29,7 +31,7 @@ if __name__ == '__main__':
     Config.load(Config.strip(env='conf/env.yml'))
     server = Server(
         applications=[
-            Application(port=8081, routes=[MyRoutes()])
+            Application(port=4000, routes=[MyRoutes()])
         ],
         services=[
             BasicService(),
@@ -41,10 +43,10 @@ if __name__ == '__main__':
 ### Example: Config
 
 When the app boots, the ```Config``` object is injected with an arbitrary YML file of your choosing. Any environment
-variables with matching property names will overwrite the values in the file. Reference any property within your
-app via ```Config.find(property)```.
+variables with matching property names will overwrite the values in the file. After the injection, reference any property 
+within your app via ```Config.find(property)```.
 
-> Below shows the required properties to connect to Postgres/Redis databases.
+> Below are the required properties if you wish to add Postgres or Redis databases.
 
 ```yaml
 postgres:
@@ -61,9 +63,6 @@ redis:
 
 Each service must create a logger. Optionally, they can attach a handler to the database.
 
-> Give your service an async ```start``` function to run an action when the application boots.
-
-
 ```python
 from vertebrae.service import Service
 
@@ -73,9 +72,12 @@ class BasicService(Service):
     def __init__(self):
         self.log = self.logger('basic')
         self.database = self.db()
-
-    def get_account(self, request):
-        pass
+    
+    async def start(self):
+        self.log.debug('Service start functions automatically run when the app boots up')
+    
+    async def get_account(self, name):
+        self.log.info(f'Creating new account: {name}')
 ```
 
 ### Example: Route
@@ -84,10 +86,12 @@ A route class must contain a ```routes``` function which returns a list of ```Ro
 These represent your API handlers. Note how services can be engaged throughout your application.
 
 ```python
+from aiohttp import web
+
 from vertebrae.core import Route
 from vertebrae.service import Service
 
-class UniversalRoutes:
+class MyRoutes:
 
     def routes(self) -> [Route]:
         return [
@@ -95,6 +99,6 @@ class UniversalRoutes:
         ]
 
     async def _get_account(self, request: web.Request) -> web.json_response:
-        resp = await Service.service('basic').get_account(request)
+        resp = await Service.service('basic').get_account(name=request.rel_url.query['name'])
         return web.json_response(resp)
 ```
