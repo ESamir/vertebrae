@@ -1,6 +1,16 @@
 # Vertebrae
 
-An async application framework for Python microservices.
+An application framework for building async Python microservices. Use this to add consistency between your API code bases. 
+
+## How it works
+
+1. Create a Vertebrae Server and attach applications (APIs) to it with defined Vertebrae Routes.
+2. (optionally) Supply connection details to Postgres and/or Redis. Vertebrae will create async connection pools for each.
+3. Convert your classes to Vertebrae Services. This creates a mesh network between them and supplies each with a handler to your databases.
+
+<img src="architecture.png" width="700"/>
+
+> Above you can see two apps being served with three services available. Services can tap into the databases. 
 
 ## Get started
 
@@ -28,11 +38,14 @@ if __name__ == '__main__':
 
 ### Example: Config
 
-A YML file full of properties gets loaded into the ```Config``` object. The mandatory schema is below, however you
-can add your own custom properties to this file and reference them via ```Config.find(property)``` anywhere in your app.
+When the app boots, the ```Config``` object is injected with an arbitrary YML file of your choosing. Any environment
+variables with matching property names will overwrite the values in the file. Reference any property within your
+app via ```Config.find(property)```.
+
+> Below shows the required properties to connect to Postgres/Redis databases.
 
 ```yaml
-database:
+postgres:
   database: frequency
   user: postgres
   password: ~
@@ -45,6 +58,9 @@ redis:
 ### Example: Service
 
 Each service must create a logger. Optionally, they can attach a handler to the database.
+
+> Give your service an async ```start``` function to run an action when the application boots.
+
 
 ```python
 from vertebrae.service import Service

@@ -23,7 +23,8 @@ class Database:
                                                  f"host={postgres['host']} "
                                                  f"port={postgres['port']} ",
                                                  minsize=0, maxsize=5, timeout=10.0)
-            await self.apply_schema()
+            with open('conf/schema.sql', 'r') as sql:
+                await self.execute(sql.read())
 
         redis = Config.find('redis')
         if redis:
@@ -33,11 +34,6 @@ class Database:
                 db=redis.get("database", 0),
                 decode_responses=True
             )
-
-    async def apply_schema(self) -> None:
-        """ Ensure relational DB matches local schema """
-        with open('conf/schema.sql', 'r') as sql:
-            await self.execute(sql.read())
 
     async def execute(self, statement: str, params=(), return_id=False):
         """ Run statement retrieving either nothing or the row ID """
@@ -50,7 +46,7 @@ class Database:
         except Exception as e:
             logging.exception(e)
 
-    async def fetch_all(self, query: str, params=()):
+    async def fetch(self, query: str, params=()):
         """ Find all matches for a query """
         try:
             async with self._pool.acquire() as conn:
@@ -59,13 +55,3 @@ class Database:
                     return await cur.fetchall()
         except Exception as e:
             logging.exception(e)
-
-    async def fetch_one(self, query, params=()):
-        """ Find a single database entry """
-        try:
-            async with self._pool.acquire() as conn:
-                async with conn.cursor() as cur:
-                    await cur.execute(query, params)
-                    return await cur.fetchone()
-        except Exception as e:
-            logging.error(e)
