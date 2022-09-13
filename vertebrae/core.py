@@ -52,8 +52,12 @@ class Application:
         for collection in routes:
             for route in collection.routes():
                 self.application.router.add_route(route.method, route.route, route.handle)
+        self.application.router.add_route('GET', '/ping', self.pong)
 
     async def start(self):
         runner = web.AppRunner(self.application)
         await runner.setup()
         await web.TCPSite(runner=runner, port=self.port).start()
+
+    async def pong(self, req: web.Request) -> web.Response:
+        return web.Response(status=200)
