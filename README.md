@@ -72,7 +72,7 @@ class BasicService(Service):
         self.database = self.db()
     
     async def start(self):
-        self.log.debug('Service start functions automatically run when the app boots up')
+        self.log.debug('Service start functions auto run when the app boots')
     
     async def get_account(self, name):
         self.log.info(f'Creating new account: {name}')
