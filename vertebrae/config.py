@@ -17,7 +17,7 @@ class Config:
     @classmethod
     def find(cls, prop=None, fallback=None):
         """ Find a property """
-        return cls._configs.get(prop, None)
+        return cls._configs.get(prop, fallback)
 
     @staticmethod
     def strip(env):
