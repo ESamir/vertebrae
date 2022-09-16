@@ -19,7 +19,7 @@ class Cache:
             )
 
     async def get(self, k):
-        await self._cache.get(k)
+        return await self._cache.get(k)
 
     async def add(self, k, v):
         await self._cache.add(k, v)
@@ -28,13 +28,13 @@ class Cache:
         await self._cache.delete(k)
 
     async def rpop(self, k):
-        await self._cache.rpop(k)
+        return await self._cache.rpop(k)
 
     async def rpush(self, k, v):
         await self._cache.rpush(k, v)
 
     async def hget(self, k1, k2):
-        await self._cache.hget(k1, k2)
+        return await self._cache.hget(k1, k2)
 
     async def hset(self, k1, k2, v):
         await self._cache.hset(k1, k2, v)
