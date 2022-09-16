@@ -32,8 +32,8 @@ if __name__ == '__main__':
             Application(port=4000, routes=[MyRoutes()])
         ],
         services=[
-            BasicService(),
-            NotifyService()
+            BasicService('basic'),
+            NotifyService('notify')
         ])
     server.run()
 ```
@@ -59,7 +59,7 @@ redis:
 
 ### Example: Service
 
-Each service must create a logger. Optionally, they can attach a handler to the database.
+Each service gets a logger for free. It can optionally attach a handler to the database (shown below).
 
 ```python
 from vertebrae.service import Service
@@ -67,8 +67,8 @@ from vertebrae.service import Service
 class BasicService(Service):
     """ General functionality for this app """
 
-    def __init__(self):
-        self.log = self.logger('basic')
+    def __init__(self, name: str):
+        super().__init__(name)
         self.database = self.db()
     
     async def start(self):
