@@ -12,7 +12,7 @@ class Service(abc.ABC):
     _database = Database()
 
     def __init__(self, name: str):
-        self.log = logging.getLogger(f'vertebrae-{name}')
+        self.log = logging.getLogger(f'vertebrae.{name}')
 
     @classmethod
     def enroll(cls, name: str, impl: str) -> None:
@@ -22,7 +22,7 @@ class Service(abc.ABC):
     @classmethod
     def find(cls, name: str) -> ():
         """ Find a service by name """
-        return cls._services.get(f'vertebrae-{name}')
+        return cls._services.get(f'vertebrae.{name}')
 
     @classmethod
     def db(cls) -> ():

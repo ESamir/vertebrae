@@ -22,7 +22,6 @@ class Server:
         for app in applications:
             self.loop.run_until_complete(app.start())
         for service in services:
-
             Service.enroll(service.log.name, service)
         self.create_log('server').info(f'Serving {len(applications)} apps with {len(services)} services')
 
@@ -35,7 +34,7 @@ class Server:
 
     @staticmethod
     def create_log(name: str) -> logging.Logger:
-        return logging.getLogger(f'vertebrae-{name}')
+        return logging.getLogger(f'vertebrae.{name}')
 
     @staticmethod
     def setup_logger(path):

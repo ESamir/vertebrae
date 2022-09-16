@@ -18,6 +18,9 @@ class Cache:
                 decode_responses=True
             )
 
+    async def get(self, k):
+        await self._cache.get(k)
+
     async def add(self, k, v):
         await self._cache.add(k, v)
 
