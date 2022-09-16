@@ -22,8 +22,9 @@ class Server:
         for app in applications:
             self.loop.run_until_complete(app.start())
         for service in services:
+            setattr(service, 'log', self.create_log(service.name()))
             Service.enroll(service.name(), service)
-        Service.create_log('server').info(f'Serving {len(applications)} apps with {len(services)} services')
+        self.create_log('server').info(f'Serving {len(applications)} apps with {len(services)} services')
 
     def run(self):
         try:
@@ -31,6 +32,10 @@ class Server:
             self.loop.run_forever()
         except KeyboardInterrupt:
             logging.info('Keyboard interrupt received')
+
+    @staticmethod
+    def create_log(name: str) -> logging.Logger:
+        return logging.getLogger(f'vertebrae-{name}')
 
     @staticmethod
     def setup_logger(path):

@@ -40,6 +40,11 @@ class Service(abc.ABC):
         """ Create or retrieve a logger """
         return logging.getLogger(f'vertebrae-{name}')
 
+    @property
+    def log(self) -> logging.Logger:
+        """ Create or retrieve a logger """
+        return getattr(self, 'log', None)
+
     @abc.abstractmethod
     def name(self) -> str:
         pass
