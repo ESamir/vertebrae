@@ -11,6 +11,23 @@ from vertebrae.service import Service
 Route = namedtuple('Route', 'method route handle')
 
 
+async def strip_request(request: web.Request):
+    """ Strip data off request consistently regardless of method """
+    if request.content_type == 'application/x-www-form-urlencoded':
+        return await request.text()
+    else:
+        data = dict(request.match_info)
+        if request.method == 'GET':
+            data.update(dict(request.rel_url.query))
+        if request.content_type == 'application/json':
+            data.update(dict(await request.json()))
+        return data
+
+
+def create_log(name: str) -> logging.Logger:
+    return logging.getLogger(f'vertebrae.{name}')
+
+
 class Server:
     """ A server is the driver that runs applications """
 
@@ -23,7 +40,7 @@ class Server:
             self.loop.run_until_complete(app.start())
         for service in services:
             Service.enroll(service.log.name, service)
-        self.create_log('server').info(f'Serving {len(applications)} apps with {len(services)} services')
+        create_log('server').info(f'Serving {len(applications)} apps with {len(services)} services')
 
     def run(self):
         try:
@@ -31,10 +48,6 @@ class Server:
             self.loop.run_forever()
         except KeyboardInterrupt:
             logging.info('Keyboard interrupt received')
-
-    @staticmethod
-    def create_log(name: str) -> logging.Logger:
-        return logging.getLogger(f'vertebrae.{name}')
 
     @staticmethod
     def setup_logger(path):
