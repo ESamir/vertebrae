@@ -22,8 +22,8 @@ class Server:
         for app in applications:
             self.loop.run_until_complete(app.start())
         for service in services:
-            setattr(service, 'log', self.create_log(service.name()))
-            Service.enroll(service.name(), service)
+
+            Service.enroll(service.log.name, service)
         self.create_log('server').info(f'Serving {len(applications)} apps with {len(services)} services')
 
     def run(self):
@@ -41,7 +41,7 @@ class Server:
     def setup_logger(path):
         logging.basicConfig(
             level='DEBUG',
-            format='%(asctime)s - %(levelname)-5s (%(name)s) %(message)s',
+            format='%(asctime)s - %(levelname)-5s [%(name)s] %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S',
             handlers=[WatchedFileHandler(filename=path)] if path else None
         )

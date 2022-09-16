@@ -11,6 +11,9 @@ class Service(abc.ABC):
     _services = dict()
     _database = Database()
 
+    def __init__(self, name: str):
+        self.log = logging.getLogger(f'vertebrae-{name}')
+
     @classmethod
     def enroll(cls, name: str, impl: str) -> None:
         """ Add a new service """
@@ -19,7 +22,7 @@ class Service(abc.ABC):
     @classmethod
     def find(cls, name: str) -> ():
         """ Find a service by name """
-        return cls._services.get(name)
+        return cls._services.get(f'vertebrae-{name}')
 
     @classmethod
     def db(cls) -> ():
@@ -39,12 +42,3 @@ class Service(abc.ABC):
     def create_log(cls, name: str) -> logging.Logger:
         """ Create or retrieve a logger """
         return logging.getLogger(f'vertebrae-{name}')
-
-    @property
-    def log(self) -> logging.Logger:
-        """ Create or retrieve a logger """
-        return getattr(self, 'log', None)
-
-    @abc.abstractmethod
-    def name(self) -> str:
-        pass
