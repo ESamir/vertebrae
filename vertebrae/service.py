@@ -1,10 +1,11 @@
+import abc
 import asyncio
 import logging
 
 from vertebrae.database import Database
 
 
-class Service:
+class Service(abc.ABC):
     """ Each internal services is created and managed here """
 
     _services = dict()
@@ -16,7 +17,7 @@ class Service:
         cls._services[name] = impl
 
     @classmethod
-    def service(cls, name: str) -> ():
+    def find(cls, name: str) -> ():
         """ Find a service by name """
         return cls._services.get(name)
 
@@ -35,6 +36,10 @@ class Service:
                 asyncio.create_task(func())
 
     @classmethod
-    def logger(cls, name: str) -> logging.Logger:
+    def create_log(cls, name: str) -> logging.Logger:
         """ Create or retrieve a logger """
-        return logging.getLogger(name)
+        return logging.getLogger(f'vertebrae-{name}')
+
+    @abc.abstractmethod
+    def name(self) -> str:
+        pass
