@@ -33,15 +33,15 @@ class S3:
 
     async def read(self, bucket: str, key: str) -> str:
         """ Read file from S3 """
-        return self.client.get_object(Bucket=bucket, Key=key)
+        body = self.client.get_object(Bucket=bucket, Key=key)
+        return body['Body'].read()
 
-    async def write(self, bucket: str, key: str) -> None:
+    async def write(self, bucket: str, key: str, contents: str) -> None:
         """ Write file to S3 """
-        self.client.put_object(Bucket=bucket, Key=key)
+        self.client.put_object(Body=contents, Bucket=bucket, Key=key)
 
     async def read_all(self, bucket: str, prefix: str) -> [str]:
         """ Read all contents of S3 bucket """
-
         def _retrieve(k):
             try:
                 cfg = self.client.get_object(Bucket=bucket, Key=k)
@@ -53,14 +53,13 @@ class S3:
         try:
             tasks = []
             executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
-            for key in self.client.list_objects_v2(Bucket=bucket).get('Contents'):
-                if all(k in key['Key'] for k in prefix):
-                    tasks.append(asyncio.get_event_loop().run_in_executor(executor, _retrieve, key['Key']))
+            for key in self.client.list_objects_v2(Bucket=bucket, Prefix=prefix).get('Contents'):
+                tasks.append(asyncio.get_event_loop().run_in_executor(executor, _retrieve, key['Key']))
             completed, pending = await asyncio.wait(tasks)
             for task in completed:
                 key, contents = task.result()
                 if contents:
-                    my_files[Path(key).stem] = contents.hex()
+                    my_files[Path(key).stem] = contents
             return my_files
         except botocore.exceptions.ConnectionClosedError:
             logging.error('Failed connection to AWS S3')
