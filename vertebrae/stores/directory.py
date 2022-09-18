@@ -21,6 +21,11 @@ class Directory:
         async with aiofiles.open(f'{self.name}/{filename}', mode='r') as f:
             return await f.read()
 
+    async def walk(self, prefix='*'):
+        for path in Path(self.name).glob(f'{prefix}*'):
+            async with aiofiles.open(path, mode='r') as f:
+                yield os.path.basename(path)
+
     async def write(self, filename: str, contents: str):
         async with aiofiles.open(f'{self.name}/{filename}', mode='w') as outfile:
             await outfile.write(contents)

@@ -1,5 +1,6 @@
 import abc
 import asyncio
+import hashlib
 import logging
 
 from vertebrae.database import Database
@@ -42,3 +43,9 @@ class Service(abc.ABC):
     def create_log(cls, name: str) -> logging.Logger:
         """ Create or retrieve a logger """
         return logging.getLogger(f'vertebrae-{name}')
+
+    @classmethod
+    def hash(cls, s: str, algo='sha256'):
+        """ Hash a string """
+        func = getattr(hashlib, algo)
+        return func(s.encode('utf-8')).hexdigest()
