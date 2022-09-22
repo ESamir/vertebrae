@@ -22,6 +22,9 @@ class Cache:
     async def get(self, k):
         return await self._cache.get(k)
 
+    async def get_del(self, k):
+        return await self._cache.execute_command('GETDEL', k)
+
     async def set(self, k, v):
         await self._cache.set(k, v)
 
