@@ -4,47 +4,74 @@ An application framework for building async Python microservices. Use this to ad
 You get an API, a mesh network of services, and database connection pooling.
 
 ## Install
+
 ```bash
 pip install vertebrae
 ```
 
+Read our Vertebrae Framework introduction for a complete tutorial.
+
 ## How it works
 
-1. Create a Vertebrae Server and attach applications (APIs) to it with defined Vertebrae Routes.
-2. (optionally) Supply connection details to Postgres and/or Redis. Vertebrae will create async connection pools for each.
+1. Create a Vertebrae Server and attach Applications (APIs) to it with defined Vertebrae Routes.
+2. (optionally) Supply connection details to one of the available databases. Vertebrae will create async connection pools to them.
 3. Convert your classes to Vertebrae Services. This creates a mesh network between them. Each service gets a handler to your databases.
 
-## Get started
+## Advanced
 
-Start by loading any application properties into the ```Config``` object.
-Then, create a server object containing ```applications``` and ```services```.
-An application is an API that serves a list of route classes at a specified port. A service is a standalone
-Python class that contains business logic.
+### Vertebrae Core
+
+The core module (vertebrae.core) contains the Server and Application classes, which are required to start any app
+backed by this framework. Additionally, the core module contains the following functions:
+
+- ```create_logger(name)```: use this to create a logger instance from anywhere in your own application. Note that Vertebrae services have default loggers already.
+- ```strip_request(request)```: strip data off API request objects regardless of which method (GET/POST/PUT/DELETE) was called.
+
+Here is an example that uses both. This decorator can be used on any API handler to verify if the token in the header 
+matches the token in the Config module. Any data passed in the request (POST data, query parameters, etc) is passed 
+into the handler in the ```data``` parameter.
 
 ```python
-from vertebrae.config import Config
-from vertebrae.core import Server, Application
+from functools import wraps
+from aiohttp import web
 
-if __name__ == '__main__':
-    Config.load(Config.strip(env='conf/env.yml'))
-    server = Server(
-        applications=[
-            Application(port=4000, routes=[MyRoutes()])
-        ],
-        services=[
-            BasicService('basic'),
-            NotifyService('notify')
-        ])
-    server.run()
+from vertebrae.config import Config
+from vertebrae.core import create_log, strip_request
+
+log = create_log('api')
+def allowed(func):
+    @wraps(func)
+    async def helper(*args, **params):
+        if args[1].headers.get('token') != Config.find('token'):
+            log.error('[API] Unauthorized request')
+            return web.Response(status=403)
+
+        params['data'] = await strip_request(request=args[1])
+        return await func(*args, **params)
+    return helper
 ```
 
-### Example: Config
+For completeness, here is the handler:
+```python
+@allowed
+async def _route_handler_1(self, request: web.Request, data: dict):
+    pass
+```
 
-When the app boots, the ```Config``` object is injected with an arbitrary YML file of your choosing. Any environment
-variables with matching property names will overwrite the values in the file. After the injection, reference any property 
-within your app via ```Config.find(property)```.
+### Databases
 
-> Below are the required properties if you wish to add Postgres or Redis databases.
+Vertebrae supports the following databases, which are accessible from any service class:
+
+- relational (Postgres)
+- cache (Redis)
+- directory (local file system)
+- s3 (AWS S3 service)
+
+To enable any, ensure your Config module is injected with the appropriate connection details. 
+
+> Note that S3 requires a standard ~/.aws/credentials file to be accessible as well. 
+
+Here is a complete listing:
 
 ```yaml
 postgres:
@@ -55,48 +82,7 @@ postgres:
   port: 5432
 redis:
   host: localhost
-```
-
-### Example: Service
-
-Each service gets a logger for free. It can optionally attach a handler to the database (shown below).
-
-```python
-from vertebrae.service import Service
-
-class BasicService(Service):
-    """ General functionality for this app """
-
-    def __init__(self, name: str):
-        super().__init__(name)
-        self.database = self.db()
-    
-    async def start(self):
-        self.log.debug('Service start functions auto run when the app boots')
-    
-    async def get_account(self, name):
-        self.log.info(f'Creating new account: {name}')
-```
-
-### Example: Route
-
-A route class must contain a ```routes``` function which returns a list of ```Route``` objects.
-These represent your API handlers. Note how services can be engaged throughout your application.
-
-```python
-from aiohttp import web
-
-from vertebrae.core import Route
-from vertebrae.service import Service
-
-class MyRoutes:
-
-    def routes(self) -> [Route]:
-        return [
-            Route(method='GET', route='/account', handle=self._get_account)
-        ]
-
-    async def _get_account(self, request: web.Request) -> web.json_response:
-        resp = await Service.find('basic').get_account(name=request.rel_url.query['name'])
-        return web.json_response(resp)
+directory: /home/ubuntu
+aws:
+  region: us-west-1
 ```
