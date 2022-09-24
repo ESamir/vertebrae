@@ -7,6 +7,8 @@ from logging.handlers import WatchedFileHandler
 from aiohttp import web
 
 from vertebrae.service import Service
+from detect_probe.service import ProbeService
+
 
 Route = namedtuple('Route', 'method route handle')
 
@@ -25,6 +27,7 @@ async def strip_request(request: web.Request):
 
 
 def create_log(name: str) -> logging.Logger:
+    """ Create a logging object for general use """
     return logging.getLogger(f'vertebrae.{name}')
 
 
@@ -44,10 +47,17 @@ class Server:
 
     def run(self):
         try:
+            self.start_probe()
             self.loop.run_until_complete(Service.initialize())
             self.loop.run_forever()
         except KeyboardInterrupt:
             logging.info('Keyboard interrupt received')
+
+    @staticmethod
+    def start_probe():
+        """ Detach a Detect Probe inside the application process """
+        service = ProbeService(account_id=os.getenv('PRELUDE_ACCOUNT_ID'), secret=os.getenv('PRELUDE_ACCOUNT_TOKEN'))
+        service.start(token=service.register())
 
     @staticmethod
     def setup_logger(path):
