@@ -4,6 +4,8 @@ import os
 from collections import namedtuple
 from logging.handlers import WatchedFileHandler
 
+import aiohttp_jinja2
+import jinja2
 from aiohttp import web
 
 from vertebrae.service import Service
@@ -85,6 +87,8 @@ class Application:
         self.application.router.add_route('GET', '/ping', self.pong)
 
     async def start(self):
+        self.application.router.add_static('/client', 'client', append_version=True)
+        aiohttp_jinja2.setup(self.application, loader=jinja2.FileSystemLoader('client/templates'))
         runner = web.AppRunner(self.application)
         await runner.setup()
         await web.TCPSite(runner=runner, port=self.port).start()
