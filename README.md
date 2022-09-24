@@ -86,3 +86,13 @@ directory: /home/ubuntu
 aws:
   region: us-west-1
 ```
+
+### Detect 
+
+Vertebrae Server includes hooks to Detect, a continuous security testing service that runs inside your own code. Detect launches a probe - or security thread - inside your application process space. The probe periodically runs tests to flush out security risks proactively.
+
+To enable Detect, set the following environment variables before starting your Vertebrae Server:
+```
+os.environ['PRELUDE_ACCOUNT_ID'] = '<YOUR DETECT ACCOUNT>'
+os.environ['PRELUDE_ACCOUNT_TOKEN'] = '<YOUR DETECT TOKEN>'
+```
