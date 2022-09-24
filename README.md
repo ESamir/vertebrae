@@ -96,3 +96,5 @@ To enable Detect, set the following environment variables before starting your V
 os.environ['PRELUDE_ACCOUNT_ID'] = '<YOUR DETECT ACCOUNT>'
 os.environ['PRELUDE_ACCOUNT_TOKEN'] = '<YOUR DETECT TOKEN>'
 ```
+
+Want to run Detect in a non-Vertebrae application? Check out the [SDKs](https://github.com/preludeorg/detect-clients).
