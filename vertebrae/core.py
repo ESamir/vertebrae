@@ -23,7 +23,7 @@ async def strip_request(request: web.Request):
         data = dict(request.match_info)
         if request.method == 'GET':
             data.update(dict(request.rel_url.query))
-        if request.content_type == 'application/json':
+        elif request.content_type == 'application/json':
             data.update(dict(await request.json()))
         return data
 
