@@ -32,23 +32,26 @@ class S3:
             session = boto3.session.Session(profile_name=load_profile())
             self.client = session.client(service_name='s3', region_name=Config.find('aws')['region'])
 
-    async def read(self, bucket: str, key: str) -> str:
+    async def read(self, filename: str) -> str:
         """ Read file from S3 """
+        bucket, key = filename.split('/', 1)
         try:
             body = self.client.get_object(Bucket=bucket, Key=key)
             return body['Body'].read()
         except self.client.exceptions.NoSuchKey:
             self.log.error(f'Missing {key}')
 
-    async def write(self, bucket: str, key: str, contents: str) -> None:
+    async def write(self, filename: str, contents: str) -> None:
         """ Write file to S3 """
+        bucket, key = filename.split('/', 1)
         self.client.put_object(Body=contents, Bucket=bucket, Key=key)
 
-    async def delete(self, bucket: str, key: str) -> None:
+    async def delete(self, filename: str) -> None:
         """ Delete file from S3 """
+        bucket, key = filename.split('/', 1)
         self.client.delete_object(Bucket=bucket, Key=key)
 
-    async def read_all(self, bucket: str, prefix: str) -> [str]:
+    async def walk(self, bucket: str, prefix: str) -> [str]:
         """ Read all contents of S3 bucket """
         def _retrieve(k):
             try:

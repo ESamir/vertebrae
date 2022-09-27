@@ -26,8 +26,10 @@ class Service(abc.ABC):
         return cls._services.get(f'vertebrae.{name}')
 
     @classmethod
-    def db(cls) -> ():
+    def db(cls, store=None) -> ():
         """ Return a handler to the DB """
+        if store:
+            return getattr(cls._database, store, None)
         return cls._database
 
     @classmethod
