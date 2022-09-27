@@ -15,22 +15,26 @@ class Directory:
     async def connect(self) -> None:
         """ Construct a local file system """
         self.name = Config.find('directory', os.path.join(str(Path.home()), '.vertebrae'))
-        if not os.path.exists(self.name):
-            os.makedirs(self.name)
+        Path(self.name).mkdir(parents=True, exist_ok=True)
 
-    async def read(self, filename: str):
-        async with aiofiles.open(f'{self.name}/{filename}', mode='r') as f:
+    @staticmethod
+    async def read(filename: str):
+        async with aiofiles.open(filename, mode='r') as f:
             return await f.read()
 
     @staticmethod
     async def walk(bucket: str, prefix='*'):
         for path in Path(bucket).glob(f'{prefix}*'):
-            async with aiofiles.open(path, mode='r') as f:
+            async with aiofiles.open(path, mode='r') as _:
                 yield os.path.basename(path)
 
-    async def write(self, filename: str, contents: str):
-        async with aiofiles.open(f'{self.name}/{filename}', mode='w') as outfile:
+    @staticmethod
+    async def write(filename: str, contents: str):
+        directory = Path(filename).parent
+        Path(directory).mkdir(parents=True, exist_ok=True)
+        async with aiofiles.open(filename, mode='w') as outfile:
             await outfile.write(contents)
 
-    async def delete(self, filename: str):
-        os.remove(f'{self.name}/{filename}')
+    @staticmethod
+    async def delete(filename: str):
+        os.remove(filename)
