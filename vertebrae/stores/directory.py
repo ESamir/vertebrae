@@ -22,8 +22,9 @@ class Directory:
         async with aiofiles.open(f'{self.name}/{filename}', mode='r') as f:
             return await f.read()
 
-    async def walk(self, prefix='*'):
-        for path in Path(self.name).glob(f'{prefix}*'):
+    @staticmethod
+    async def walk(bucket: str, prefix='*'):
+        for path in Path(bucket).glob(f'{prefix}*'):
             async with aiofiles.open(path, mode='r') as f:
                 yield os.path.basename(path)
 
