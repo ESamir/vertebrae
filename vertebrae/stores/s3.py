@@ -61,7 +61,11 @@ class S3:
         try:
             tasks = []
             executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
-            for key in self.client.list_objects_v2(Bucket=bucket, Prefix=prefix).get('Contents'):
+            files = self.client.list_objects_v2(Bucket=bucket, Prefix=prefix).get('Contents')
+            if not files:
+                return my_files
+
+            for key in files:
                 tasks.append(asyncio.get_event_loop().run_in_executor(executor, _retrieve, key['Key']))
             completed, pending = await asyncio.wait(tasks)
             for task in completed:
