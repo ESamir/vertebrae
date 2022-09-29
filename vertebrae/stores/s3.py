@@ -1,7 +1,7 @@
+import os
 import asyncio
 import concurrent.futures
 
-from pathlib import Path
 from typing import Optional
 
 import boto3
@@ -82,7 +82,7 @@ class S3:
             for task in completed:
                 key, contents = task.result()
                 if contents:
-                    my_files[Path(key).stem] = contents
+                    my_files[os.path.basename(key)] = contents
             return my_files
         except botocore.exceptions.ConnectionClosedError:
             self.log.error('Failed connection to AWS S3')
