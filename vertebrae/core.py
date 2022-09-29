@@ -17,7 +17,7 @@ Route = namedtuple('Route', 'method route handle')
 
 async def strip_request(request: web.Request):
     """ Strip data off request consistently regardless of method """
-    if request.content_type == 'application/x-www-form-urlencoded':
+    if request.content_type in ['application/x-www-form-urlencoded', 'text/plain']:
         return await request.text()
     else:
         data = dict(request.match_info)
