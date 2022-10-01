@@ -81,6 +81,7 @@ class Application:
     def __init__(self, port, routes, client_max_size=4096, html_template_directory='templates'):
         self.port = port
         self.application = web.Application(client_max_size=client_max_size)
+        self.application.router.add_static('/client', 'client', append_version=True)
         self.html_template_directory = f'client/{html_template_directory}'
 
         for collection in routes:
