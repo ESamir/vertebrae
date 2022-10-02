@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 from collections import namedtuple
+from json import JSONDecodeError
 from logging.handlers import WatchedFileHandler
 
 import aiohttp_jinja2
@@ -21,11 +22,12 @@ async def strip_request(request: web.Request):
     if request.content_type in ['application/x-www-form-urlencoded', 'text/plain']:
         return await request.text()
     else:
-        data = dict(request.match_info)
-        if request.method == 'GET':
-            data.update(dict(request.rel_url.query))
-        elif request.content_type == 'application/json':
-            data.update(dict(await request.json()))
+        data = dict(request.match_info) | dict(request.rel_url.query)
+        if request.content_type == 'application/json':
+            try:
+                data.update(dict(await request.json()))
+            except JSONDecodeError:
+                pass
         return data
 
 
