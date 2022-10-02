@@ -43,6 +43,8 @@ class Server:
         asyncio.set_event_loop(self.loop)
 
         for app in applications:
+            app.attach_routes()
+            app.attach_gui()
             self.loop.run_until_complete(app.start())
         for service in services:
             Service.enroll(service.log.name, service)
@@ -78,26 +80,25 @@ class Server:
 class Application:
     """ An application is a API """
 
-    def __init__(self, port, routes, client_max_size=4096, html_template_directory='templates'):
+    def __init__(self, port, routes, client_max_size=4096):
         self.port = port
+        self.routes = routes
         self.application = web.Application(client_max_size=client_max_size)
-        self.application.router.add_static('/client', 'client', append_version=True)
-        self.html_template_directory = f'client/{html_template_directory}'
+        self.application.router.add_route('GET', '/ping', self.pong)
 
-        for collection in routes:
+    def attach_routes(self):
+        for collection in self.routes:
             for route in collection.routes():
                 route_type = type(route)
                 if route_type == Route:
                     self.application.router.add_route(route.method, route.route, route.handle)
                 elif route_type == StaticRoute:
-                    self.application.router.add_static(route.prefix, f'client/{route.path}')
-        self.application.router.add_route('GET', '/ping', self.pong)
+                    self.application.router.add_static(route.prefix, route.path)
+
+    def attach_gui(self):
+        aiohttp_jinja2.setup(self.application, loader=jinja2.FileSystemLoader('client/templates'))
 
     async def start(self):
-        try:
-            aiohttp_jinja2.setup(self.application, loader=jinja2.FileSystemLoader(self.html_template_directory))
-        except:
-            create_log('server').info('No GUI attached. See pypi.org/project/vertebrae for more info.')
         runner = web.AppRunner(self.application)
         await runner.setup()
         await web.TCPSite(runner=runner, port=self.port).start()
