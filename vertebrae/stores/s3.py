@@ -42,7 +42,7 @@ class S3:
             return body['Body'].read()
         except self.client.exceptions.NoSuchKey:
             self.log.error(f'Missing {key}')
-        except self.client.exceptions.AccessDenied:
+        except botocore.exceptions.ClientError:
             self.log.error(f'Missing {key}')
 
     def download_file(self, filename: str, dst: str):
