@@ -26,8 +26,8 @@ class Cache:
     async def get_del(self, k):
         return await self._cache.execute_command('GETDEL', k)
 
-    async def set(self, k, v):
-        await self._cache.set(k, v)
+    async def set(self, k, v, ex=None):
+        await self._cache.set(k, v, ex=ex)
 
     async def delete(self, k):
         await self._cache.delete(k)
