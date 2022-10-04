@@ -42,11 +42,6 @@ class Service(abc.ABC):
                 asyncio.create_task(func())
 
     @classmethod
-    def create_log(cls, name: str) -> logging.Logger:
-        """ Create or retrieve a logger """
-        return logging.getLogger(f'vertebrae-{name}')
-
-    @classmethod
     def hash(cls, s: str, algo='sha256'):
         """ Hash a string """
         func = getattr(hashlib, algo)
