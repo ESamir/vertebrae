@@ -72,7 +72,7 @@ class S3:
     async def walk(self, bucket: str, prefix: str) -> [str]:
         """ Get all files of S3 bucket """
         try:
-            obj_list = self.client.list_objects_v2(Bucket=bucket, Prefix=prefix).get('Contents')
+            obj_list = self.client.list_objects_v2(Bucket=bucket, Prefix=prefix).get('Contents', [])
             return [f['Key'] for f in obj_list]
         except botocore.exceptions.ConnectionClosedError:
             self.log.error('Failed connection to AWS S3')
