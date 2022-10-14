@@ -32,7 +32,7 @@ class Directory:
     async def write(filename: str, contents: str):
         directory = Path(filename).parent
         Path(directory).mkdir(parents=True, exist_ok=True)
-        async with aiofiles.open(filename, mode='w') as outfile:
+        async with aiofiles.open(filename, mode='wb') as outfile:
             await outfile.write(contents)
 
     @staticmethod
