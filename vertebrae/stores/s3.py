@@ -34,6 +34,17 @@ class S3:
             session = boto3.session.Session(profile_name=load_profile())
             self.client = session.client(service_name='s3', region_name=Config.find('aws')['region'])
 
+    async def exists(self, bucket: str, object: str):
+        """ Check if a file exists """
+        try:
+            self.client.head_object(Bucket=bucket, Key=object).load()
+            return True
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == '404':
+                self.log.warning(f'Missing {object}')
+            else:
+                self.log.error(f'Error looking up {object}')
+
     async def read(self, filename: str) -> str:
         """ Read file from S3 """
         bucket, key = filename.split('/', 1)
