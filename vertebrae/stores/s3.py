@@ -37,7 +37,7 @@ class S3:
     async def exists(self, bucket: str, object: str):
         """ Check if a file exists """
         try:
-            self.client.head_object(Bucket=bucket, Key=object).load()
+            self.client.head_object(Bucket=bucket, Key=object)
             return True
         except botocore.exceptions.ClientError as e:
             if e.response['Error']['Code'] == '404':
