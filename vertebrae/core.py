@@ -5,6 +5,7 @@ from collections import namedtuple
 from json import JSONDecodeError
 from logging.handlers import WatchedFileHandler
 
+import aiohttp_cors
 import aiohttp_jinja2
 import jinja2
 from aiohttp import web
@@ -88,13 +89,19 @@ class Application:
         self.template_directory = template_directory
         self.application = web.Application(client_max_size=client_max_size)
         self.application.router.add_route('GET', '/ping', self.pong)
+        self.cors = aiohttp_cors.setup(self.application, defaults={
+            "*": aiohttp_cors.ResourceOptions(
+                    expose_headers="*",
+                    allow_headers="*",
+                )
+        })
 
     def attach_routes(self):
         for collection in self.routes:
             for route in collection.routes():
                 route_type = type(route)
                 if route_type == Route:
-                    self.application.router.add_route(route.method, route.route, route.handle)
+                    self.cors.add(self.application.router.add_route(route.method, route.route, route.handle))
                 elif route_type == StaticRoute:
                     self.application.router.add_static(route.prefix, route.path)
 

@@ -10,3 +10,4 @@ botocore~=1.27.9
 detect-probe==0.9.21
 Jinja2~=3.1.2
 aiohttp_jinja2==1.5
+aiohttp_cors==0.7.0
