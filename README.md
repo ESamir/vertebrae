@@ -27,9 +27,19 @@ backed by this framework. Additionally, the core module contains the following f
 - ```create_logger(name)```: use this to create a logger instance from anywhere in your own application. Note that Vertebrae services have default loggers already.
 - ```strip_request(request)```: strip data off API request objects regardless of which method (GET/POST/PUT/DELETE) was called.
 
-Here is an example that uses both. This decorator can be used on any API handler to verify if the token in the header 
-matches the token in the Config module. Any data passed in the request (POST data, query parameters, etc) is passed 
-into the handler in the ```data``` parameter.
+Here is an example that uses both. Imagine you have an API route that looks like this:
+
+```
+def routes(self) -> [Route]:
+    return [Route(method='POST', route='/account', handle=self._post_account)]
+        
+@allowed
+async def _post_account(self, data: dict):
+    pass
+```
+
+You can create the following ```allowed``` decorator to add authentication to your API. In this case, we are checking if the token in the header 
+matches the token in the Config module. Any data passed in the request (POST data, query parameters, etc) is passed into the handler via the ```data``` parameter.
 
 ```python
 from functools import wraps
@@ -48,15 +58,8 @@ def allowed(func):
             return web.Response(status=403)
 
         params['data'] = await strip_request(request=args[1])
-        return await func(*args, **params)
+        return await func(args[0], **params)
     return helper
-```
-
-For completeness, here is the handler:
-```python
-@allowed
-async def _route_handler_1(self, request: web.Request, data: dict):
-    pass # the data dict contains any information from the GET/PUT/POST/DELETE request
 ```
 
 ### Databases
