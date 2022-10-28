@@ -1,6 +1,6 @@
-# Sample Vertebrae micro service
+# Chatter Bot
 
-This directory contains a sample Vertebrae-backed application you can use as a template. 
+Chatter Bot is a simple example of a Vertebrae-backed application. Use this as a template for your own projects. 
 
 It is a simple queue system, which allows you to save messages to a queue and retrieve them later.
 
