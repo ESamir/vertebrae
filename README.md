@@ -88,39 +88,6 @@ aws:
   region: us-west-1
 ```
 
-### Client side apps
-
-You can attach a website GUI to your Vertebrae Server by simply creating a ```client``` directory in
-the root of your project containing all your static resources (css, javascript, images, etc.). The only special
-directory must be a ```client/templates``` directory containing your HTML file(s).
-
-With that in place, your HTML files can reference resources at ```/client```, such as:
-
-```angular2html
-<script src="/client/js/main.js"></script>
-```
-
-Finally, you must add Vertebrae Routes for each HTML page you want to display. 
-
-Below is an example routes class that returns the index.html file found at ```client/templates/index.html```.
-
-```python
-from aiohttp import web
-from aiohttp_jinja2 import template
-from vertebrae.core import Route
-
-class WebRoutes:
-
-    def routes(self) -> [Route]:
-        return [
-            Route('GET', '/', self._get_index)
-        ]
-
-    @template('index.html')
-    async def _get_index(self, request: web.Request) -> dict:
-        return dict(hello='world')
-```
-
 ### Detect 
 
 Prelude is beta testing a new continuous security testing service called Detect. This service is currently configured
