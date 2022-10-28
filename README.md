@@ -29,7 +29,7 @@ backed by this framework. Additionally, the core module contains the following f
 
 Here is an example that uses both. Imagine you have an API route that looks like this:
 
-```
+```python
 def routes(self) -> [Route]:
     return [Route(method='POST', route='/account', handle=self._post_account)]
         
