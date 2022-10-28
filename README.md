@@ -9,7 +9,7 @@ You get an API, a mesh network of services, and database connection pooling.
 pip install vertebrae
 ```
 
-Read our Vertebrae Framework introduction for a complete tutorial.
+Read our [Vertebrae Framework introduction](https://feed.prelude.org/p/vertebrae) for a complete tutorial.
 
 ## How it works
 
@@ -39,6 +39,7 @@ from vertebrae.config import Config
 from vertebrae.core import create_log, strip_request
 
 log = create_log('api')
+
 def allowed(func):
     @wraps(func)
     async def helper(*args, **params):
@@ -55,7 +56,7 @@ For completeness, here is the handler:
 ```python
 @allowed
 async def _route_handler_1(self, request: web.Request, data: dict):
-    pass
+    pass # the data dict contains any information from the GET/PUT/POST/DELETE request
 ```
 
 ### Databases
@@ -122,12 +123,6 @@ class WebRoutes:
 
 ### Detect 
 
-Vertebrae Server includes hooks to Detect, a continuous security testing service that runs inside your own code. Detect launches a probe - or security thread - inside your application process space. The probe periodically runs tests to flush out security risks proactively.
-
-To enable Detect, set the following environment variables before starting your Vertebrae Server:
-```
-os.environ['PRELUDE_ACCOUNT_ID'] = '<YOUR DETECT ACCOUNT>'
-os.environ['PRELUDE_ACCOUNT_TOKEN'] = '<YOUR DETECT TOKEN>'
-```
-
-Want to run Detect in a non-Vertebrae application? Check out the [SDKs](https://github.com/preludeorg/detect-clients).
+Prelude is beta testing a new continuous security testing service called Detect. This service is currently configured
+inside Vertebrae as an option - however it is not enabled (nor is it possible to enable at this time). A future version
+of this framework will make that available.
