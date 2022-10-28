@@ -9,7 +9,7 @@ You get an API, a mesh network of services, and database connection pooling.
 pip install vertebrae
 ```
 
-Read our [Vertebrae Framework introduction](https://feed.prelude.org/p/vertebrae) for a complete tutorial.
+Read our [Vertebrae Framework introduction](https://feed.prelude.org/p/vertebrae) for a comprehensive walk through.
 
 ## How it works
 
