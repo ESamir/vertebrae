@@ -16,7 +16,9 @@ It includes:
 
 Download this directory and follow the installation steps:
 
-Install Redis.
+Start by installing Redis (not a Vertebrae dependency but this is the DB used by this sample app):
+
+Then install the pip requirements and start the micro service:
 
 ```bash
 pip install -r requirements.txt
