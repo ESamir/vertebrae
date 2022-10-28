@@ -92,4 +92,4 @@ aws:
 
 Prelude is beta testing a new continuous security testing service called Detect. This service is currently configured
 inside Vertebrae as an option - however it is not enabled (nor is it possible to enable at this time). A future version
-of this framework will make that available.
+of this framework will make Detect available.
