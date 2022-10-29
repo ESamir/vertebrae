@@ -1,4 +1,5 @@
 import os
+import pathlib
 from pathlib import Path
 
 import aiofiles
@@ -17,24 +18,22 @@ class Directory:
         self.name = Config.find('directory', os.path.join(str(Path.home()), '.vertebrae'))
         Path(self.name).mkdir(parents=True, exist_ok=True)
 
-    @staticmethod
-    async def read(filename: str):
-        async with aiofiles.open(filename, mode='r') as f:
+    async def read(self, filename: str):
+        filepath = Path(pathlib.PurePath(self.name, filename))
+        async with aiofiles.open(filepath, mode='r') as f:
             return await f.read()
 
-    @staticmethod
-    async def walk(bucket: str, prefix='*'):
-        for path in Path(bucket).glob(f'{prefix}*'):
+    async def walk(self, bucket: str, prefix='*'):
+        filepath = Path(pathlib.PurePath(self.name, bucket))
+        for path in Path(filepath).glob(f'{prefix}*'):
             async with aiofiles.open(path, mode='r') as _:
                 yield os.path.basename(path)
 
-    @staticmethod
-    async def write(filename: str, contents: str):
-        directory = Path(filename).parent
-        Path(directory).mkdir(parents=True, exist_ok=True)
-        async with aiofiles.open(filename, mode='wb') as outfile:
+    async def write(self, filename: str, contents: str):
+        filepath = Path(pathlib.PurePath(self.name, filename))
+        async with aiofiles.open(filepath, mode='wb') as outfile:
             await outfile.write(contents)
 
-    @staticmethod
-    async def delete(filename: str):
-        os.remove(filename)
+    async def delete(self, filename: str):
+        filepath = Path(pathlib.PurePath(self.name, filename))
+        os.remove(filepath)
