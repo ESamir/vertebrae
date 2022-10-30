@@ -104,7 +104,7 @@ class ChatService(Service):
 
 ```
 
-Provide authentication to your API routes through decorators:
+Provide authentication to your API routes through decorators. Note the special ```strip_request``` function, which uniformly pulls all data from API requests whether they are in query parameters, POST properties or other:
 
 ```python
 from functools import wraps
@@ -130,54 +130,9 @@ def allowed(func):
 
 ## Advanced
 
-### Vertebrae Core
-
-The core module (vertebrae.core) contains the Server and Application classes, which are required to start any app
-backed by this framework. Additionally, the core module contains the following functions:
-
-- ```create_logger(name)```: use this to create a logger instance from anywhere in your own application. Note that Vertebrae services have default loggers already.
-- ```strip_request(request)```: strip data off API request objects regardless of which method (GET/POST/PUT/DELETE) was called.
-
-Here is an example that uses both. 
-
-Imagine you have an API route that looks like this:
-
-```python
-def routes(self) -> [Route]:
-    return [Route(method='POST', route='/account', handle=self._post_account)]
-        
-@allowed
-async def _post_account(self, data: dict):
-    pass
-```
-
-You can create the following ```allowed``` decorator to add authentication to this API route. In this case, we are checking if the token in the header 
-matches the token in the Config module. Any data passed in the request (POST data, query parameters, etc) is passed into the handler via the ```data``` parameter. Otherwise, a 403 is returned to the caller.
-
-```python
-from functools import wraps
-from aiohttp import web
-
-from vertebrae.config import Config
-from vertebrae.core import create_log, strip_request
-
-log = create_log('api')
-
-def allowed(func):
-    @wraps(func)
-    async def helper(*args, **params):
-        if args[1].headers.get('token') != Config.find('token'):
-            log.error('[API] Unauthorized request')
-            return web.Response(status=403)
-
-        params['data'] = await strip_request(request=args[1])
-        return await func(args[0], **params)
-    return helper
-```
-
 ### Databases
 
-Vertebrae supports the following databases, which are accessible from any service class:
+Vertebrae supports the following databases, accessible from any service class:
 
 - relational (Postgres)
 - cache (Redis)
