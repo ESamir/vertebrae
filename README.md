@@ -12,7 +12,7 @@ Vertebrae helps you reduce clutter by supplying three core components:
 
 1. Routes: API handlers that supply stubs for accepting input via REST.
 2. Databases: Async connection pooling to popular databases of each primary type: relational, file and cache.
-3. Services: Connective tissue that creates an internal mesh network layer for your code.
+3. Services: Connective tissue that creates an internal mesh network for your code.
 
 ## Install
 
