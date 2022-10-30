@@ -175,6 +175,18 @@ aws:
   region: us-west-1
 ```
 
+### Cloud
+
+Vertebrae contains a cloud module that supplies clients to popular cloud providers. 
+
+> Currently AWS is the only supported provider. 
+
+To access any AWS service:
+
+```python
+client = AWS.client('s3')
+```
+
 ### Detect 
 
 Prelude is beta testing a new continuous security testing service called Detect. This service is currently configured
