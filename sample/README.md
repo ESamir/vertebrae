@@ -2,7 +2,7 @@
 
 Chatter Bot is a simple example of a Vertebrae-backed application. Use this as a template for your own projects. 
 
-It is a simple queue system, which allows you to save messages to a queue and retrieve them later.
+It acts a simple queue system, which allows you to save messages to a queue and retrieve them later.
 
 It includes:
 
@@ -11,6 +11,8 @@ It includes:
 - routes: all API route definitions
 - services: all business logic
 - conf/env.yml: an application-wide configuration file
+
+> Chatter Bot supplies all this in 58 lines of code.
 
 ## Quick start
 
