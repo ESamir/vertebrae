@@ -104,7 +104,7 @@ class ChatService(Service):
 
 ```
 
-Provide authentication to your API routes through decorators. Note the special ```strip_request``` function, which uniformly pulls all data from API requests whether they are in query parameters, POST properties or other:
+Provide authentication to your API routes through decorators. Pay attention to the special ```strip_request``` function, which uniformly pulls data from API requests whether they are in query parameters, POST properties or other, and sends them in as a ```data``` parameter into all route handlers:
 
 ```python
 from functools import wraps
