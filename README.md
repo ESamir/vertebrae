@@ -51,6 +51,8 @@ if __name__ == '__main__':
 
 Next, add route classes to accept API requests:
 
+> Vertebrae supplies a /ping route for every Application by default, which is helpful if you have a load-balancer doing health checks.
+
 ```python
 from aiohttp import web
 
