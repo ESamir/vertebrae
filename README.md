@@ -28,11 +28,81 @@ Copy the [sample](sample) application and use it as a template for your own proj
 
 ### How it works
 
-1. Create a Vertebrae Server and attach Applications (APIs) to it with defined Vertebrae Routes.
-2. (optionally) Supply connection details to one of the available databases. Vertebrae will create async connection pools to them.
-3. Convert your classes to Vertebrae Services. This creates a mesh network between them. Each service gets a handler to your databases.
+Create a Vertebrae Server and attach Applications (APIs) to it with defined Vertebrae Routes:
 
-<img width="856" alt="Screen Shot 2022-10-30 at 7 14 15 AM" src="https://user-images.githubusercontent.com/49954156/198875632-564a9c6d-c964-478e-b16b-73ce463f7380.png">
+```python
+from app.routes.core_routes import CoreRoutes
+from app.services.chat import ChatService
+from vertebrae.config import Config
+from vertebrae.core import Server, Application
+
+
+if __name__ == '__main__':
+    Config.load(Config.strip(env='conf/env.yml'))
+    server = Server(
+        applications=[
+            Application(port=8079, routes=[CoreRoutes()]),
+        ],
+        services=[
+            ChatService(name='chat')
+        ])
+    server.run()
+```
+
+Next, add route classes to accept API requests:
+
+```python
+from aiohttp import web
+
+from app.authentication import allowed
+from vertebrae.core import Route
+from vertebrae.service import Service
+
+
+class CoreRoutes:
+
+    def routes(self) -> [Route]:
+        return [
+            Route(method='GET', route='/chat', handle=self._get_messages),
+            Route(method='POST', route='/chat', handle=self._save_message),
+        ]
+
+    @allowed
+    async def _get_messages(self, data: dict) -> web.json_response:
+        messages = await Service.find('chat').get_msgs()
+        return web.json_response(messages)
+
+    @allowed
+    async def _save_message(self, data: dict) -> web.Response:
+        await Service.find('chat').save_msg(msg=data.get('text'))
+        return web.Response(status=200, text='Message saved!')
+```
+
+Finally, add service classes that contain your business logic:
+
+```python
+from vertebrae.service import Service
+
+
+class ChatService(Service):
+    """ Talk through a Redis queue """
+
+    def __init__(self, name):
+        super().__init__(name)
+        self.cache = self.db('cache')
+
+    async def save_msg(self, msg: str) -> None:
+        """ Save a message to the Redis queue """
+        self.log.debug('Saving new message')
+        await self.cache.set('voicemail', msg)
+
+    async def get_msgs(self) -> [str]:
+        """ Retrieve a message file the Redis queue """
+        self.log.debug(f'Retrieving messages')
+        messages = await self.cache.get_del('voicemail')
+        return messages
+
+```
 
 ## Advanced
 
