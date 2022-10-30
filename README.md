@@ -6,9 +6,9 @@ An application framework for building async Python microservices.
 
 Vertebrae is a security-focused, all purpose backbone for any Python API. It focuses on one core principle: reducing the lines of code in your application will enable you to write more consistent, more secure code.
 
-> The rule of thumb is that every 1,000 lines of code has 15+ unknown bugs inside. So the less code you have, the more stable and secure you can make it. 
+> The rule of thumb is that every 1,000 lines of code has 15+ unknown bugs inside. The less code you have, the more stable and secure you can make it. 
 
-Vertebrae helps you reduce clutter by supplying three core components:
+Vertebrae helps reduce clutter by supplying three core components:
 
 1. Routes: API handlers that supply stubs for accepting input via REST.
 2. Databases: Async connection pooling to popular databases of each primary type: relational, file and cache.
