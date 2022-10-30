@@ -142,7 +142,7 @@ Config.load(Config.strip(env='conf/env.yml'))
 
 You can then look up Config values from anywhere inside your application through ```Config.find("my_val")```.
 
-If you prefer environment variables, note that Vertebrae will look up any key names in your YML file and use the env var first, if found.
+If you prefer environment variables, note that Vertebrae will look up all key names in your YML file and use the env var first, if found.
 
 ### Databases
 
@@ -153,7 +153,7 @@ Vertebrae supports the following databases, accessible from any service class:
 - directory (local file system)
 - s3 (AWS S3 service)
 
-To enable any, ensure your Config module is injected with the appropriate connection details. 
+To enable any, ensure your Config module contains the appropriate connection details. 
 
 > Note that S3 requires a standard ~/.aws/credentials file to be accessible as well. 
 
