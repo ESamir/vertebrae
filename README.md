@@ -1,3 +1,5 @@
+![Vertebrae](https://user-images.githubusercontent.com/49954156/198859134-4f6d1c8f-a874-437f-bb75-2aa16e59f1f3.svg)
+
 # Vertebrae
 
 An application framework for building async Python microservices. Use this to add consistency between your API code bases.
