@@ -2,7 +2,7 @@
 
 # Vertebrae
 
-An application framework for building async Python microservices. 
+An application framework for building async Python micro services. 
 
 Vertebrae is a security-focused, all purpose backbone for any Python API. It focuses on one core principle: reducing the lines of code in your application will enable you to write more consistent, more secure code.
 
@@ -20,7 +20,7 @@ Vertebrae helps reduce clutter by supplying three core components:
 pip install vertebrae
 ```
 
-Read our [Vertebrae Framework introduction](https://feed.prelude.org/p/vertebrae) for a comprehensive walk through.
+Read our [Vertebrae Framework introduction](https://feed.prelude.org/p/vertebrae) for a walk through.
 
 ## Quick start
 
@@ -31,6 +31,8 @@ Copy the [sample](sample) application and use it as a template for your own proj
 1. Create a Vertebrae Server and attach Applications (APIs) to it with defined Vertebrae Routes.
 2. (optionally) Supply connection details to one of the available databases. Vertebrae will create async connection pools to them.
 3. Convert your classes to Vertebrae Services. This creates a mesh network between them. Each service gets a handler to your databases.
+
+<img width="856" alt="Screen Shot 2022-10-30 at 7 14 15 AM" src="https://user-images.githubusercontent.com/49954156/198875632-564a9c6d-c964-478e-b16b-73ce463f7380.png">
 
 ## Advanced
 
