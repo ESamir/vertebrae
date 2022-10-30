@@ -142,6 +142,8 @@ Config.load(Config.strip(env='conf/env.yml'))
 
 You can then look up Config values from anywhere inside your application through ```Config.find("my_val")```.
 
+If you prefer environment variables, note that Vertebrae will look up any key names in your YML file and use the env var first, if found.
+
 ### Databases
 
 Vertebrae supports the following databases, accessible from any service class:
