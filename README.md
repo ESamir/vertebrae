@@ -130,6 +130,18 @@ def allowed(func):
 
 ## Advanced
 
+### Config
+
+Vertebrae supplies a Config object to hold any application secrets or other key/value pairs used in your code. 
+
+Store these values in a YML file and load it inside your Vertebrae Server, such as:
+
+```python
+Config.load(Config.strip(env='conf/env.yml'))
+```
+
+You can then look up Config values from anywhere inside your application through ```Config.find("my_val")```.
+
 ### Databases
 
 Vertebrae supports the following databases, accessible from any service class:
